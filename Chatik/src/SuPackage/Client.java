@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import FileWorker.Filer;
 
@@ -19,33 +21,35 @@ public class Client {
 			send(skt, name);
 	}
 
-	private static Socket connect() throws UnknownHostException, IOException { //Unhandled 
-		String IP = null;
-		int PORT = (Integer) null;
+	private static Socket connect() throws UnknownHostException, IOException { // Unhandled
+		String IP = "127.0.0.1";
+		int PORT = Const.PORT;
 		Socket socket = null;
-		System.out.println("Enter ip and port or left empty for default");
+		System.out.println("Enter ip or left empty for default");
 		Scanner scr = new Scanner(System.in);
 		String Path = scr.nextLine();
-		// Переробить на регекс і кейси
-		if(Path.indexOf(':') != -1)
+		
+		if (IpValidate(Path))
 		{
-			String[] Routs = Path.split(":");
-			IP = Routs[0];
-			PORT = Integer.parseInt(Routs[1]);
-		} else {
 			IP = Path;
-			PORT = Const.PORT;
 		}
-			
 		try {
 			socket = new Socket(IP, PORT);
-		}
-		catch (ConnectException CE) {
-			System.err.println("Wrong Ip or Port");
+		} catch (ConnectException CE) {
+			System.err.println("Can`t find server on this IP");
+			
 		}
 		return socket;
 	}
-
+	
+	private static boolean IpValidate(String Ip){
+		Pattern ippatern = Pattern
+				.compile("^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+						+ "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\." + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
+		Matcher corectip = ippatern.matcher(Ip);
+		return corectip.matches();
+	}
+	
 	private static void send(Socket socket, String name) throws IOException {
 		Scanner scr = new Scanner(System.in);
 		System.out.println("Enter you message ->");
