@@ -10,6 +10,9 @@ import java.io.Serializable;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+
+import SuPackage.Const;
+
 import java.util.Iterator;
 
 public abstract class Filer {
@@ -25,10 +28,10 @@ public abstract class Filer {
 				name = scr.nextLine();
 				loginf lf = new loginf();
 				lf.NickName = name;
-				Serialize(fileName, lf);
+				DeSert.Serialize(fileName, lf);
 				lf.Print();
 			} else {
-				loginf li = DeSerialize(fileName);
+				loginf li = DeSert.DeSerialize(fileName);
 				li.Print();
 			}
 		} catch (IOException exptt) {
@@ -36,37 +39,6 @@ public abstract class Filer {
 			System.err.println("Can`t create conf file");
 		}
 		return name;
-	}
-
-	private static void Serialize(String fileName, loginf obj) {
-		try {
-			FileOutputStream fileOut = new FileOutputStream(fileName);
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			out.writeObject(obj);
-			out.close();
-			fileOut.close();
-		} catch (IOException i) {
-			i.printStackTrace();
-		}
-	}
-
-	private static loginf DeSerialize(String fileName) {
-		loginf s = null;
-		try {
-			FileInputStream fileIn = new FileInputStream(fileName);
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			s = (loginf) in.readObject();
-			in.close();
-			fileIn.close();
-			return s;
-		} catch (IOException i) {
-			i.printStackTrace();
-			return null;
-		} catch (ClassNotFoundException c) {
-			System.err.println("Can`t find nececery file");
-			c.printStackTrace();
-			return null;
-		}
 	}
 
 	static class loginf implements Serializable {
@@ -86,5 +58,16 @@ public abstract class Filer {
 				System.out.println("You still didn't visit any chat server");
 			}
 		}
+	}
+	public static void showContent() {
+		loginf li = DeSert.DeSerialize(Const.FILENAME);
+		li.Print();
+	}
+	public static void changeNick(String NewName) {
+		String NameOfFile = Const.FILENAME;
+		loginf sesinf = DeSert.DeSerialize(Const.FILENAME);
+		sesinf.NickName = NewName;
+		DeSert.Serialize(NameOfFile, sesinf);
+		
 	}
 }
